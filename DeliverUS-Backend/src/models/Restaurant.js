@@ -1,6 +1,5 @@
 import { Model } from 'sequelize'
 import moment from 'moment'
-
 const loadModel = (sequelize, DataTypes) => {
   class Restaurant extends Model {
     /**
@@ -14,7 +13,9 @@ const loadModel = (sequelize, DataTypes) => {
       Restaurant.belongsTo(models.User, { foreignKey: 'userId', as: 'user' })
       Restaurant.hasMany(models.Product, { foreignKey: 'restaurantId', as: 'products' })
       Restaurant.hasMany(models.Order, { foreignKey: 'restaurantId', as: 'orders' })
-      Restaurant.hasMany(models.ProductCategory, {foreignKey: 'restaurantId', as: 'categories'})
+      // TODO exam: New association
+      Restaurant.hasMany(models.ProductCategory, { foreignKey: 'restaurantId', as: 'productCategories' })
+      // TODO exam: END
     }
 
     async getAverageServiceTime() {

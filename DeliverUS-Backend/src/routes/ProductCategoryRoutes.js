@@ -9,37 +9,54 @@ import { handleValidation } from '../middlewares/ValidationHandlingMiddleware.js
 
 const loadFileRoutes = (app) => {
   // Define routes for product categories:
+  // TODO exam: Define routes for product categories:
   // - Create a product category (only for owners)
   // - List product categories by restaurant
   // - Show a product category
   // - Delete a product category (only for owners, only if no products are associated with it)
   // - List products by product category
+
   app.route('/productCategories/restaurants/:restaurantId')
-  .get(
-    isLoggedIn,
-    hasRole('owner'),
-    RestaurantMiddleware.checkRestaurantOwnership,
-    checkEntityExists(Restaurant, 'restaurantId'),
-    ProductCategoryController.index)
-  .post(
-    isLoggedIn,
-    hasRole('owner'),
-    checkEntityExists(Restaurant, 'restaurantId'),
-    RestaurantMiddleware.checkRestaurantOwnership,
-    ProductCategoryValidation.create,
-    handleValidation,
-    ProductCategoryController.create)
+    .post(
+      isLoggedIn,
+      hasRole('owner'),
+      checkEntityExists(Restaurant, 'restaurantId'),
+      RestaurantMiddleware.checkRestaurantOwnership,
+      ProductCategoryValidation.create,
+      handleValidation,
+      ProductCategoryController.create
+    )
+  app.route('/productCategories/restaurants/:restaurantId')
+    .get(
+      isLoggedIn,
+      hasRole('owner'),
+      checkEntityExists(Restaurant, 'restaurantId'),
+      RestaurantMiddleware.checkRestaurantOwnership,
+      ProductCategoryController.indexByRestaurant
+    )
+  app.route('/productCategories/:productCategoryId/products')
+    .get(
+      checkEntityExists(ProductCategory, 'productCategoryId'),
+      ProductCategoryController.indexProductsByCategory
+    )
 
-   app.route('/productCategories/:restaurantId/categories/:categoryId')
-   .delete(
-     isLoggedIn,
-     hasRole('owner'),
-     checkEntityExists(Restaurant, 'restaurantId'),
-     checkEntityExists(ProductCategory, 'categoryId'),
-     RestaurantMiddleware.checkRestaurantOwnership,
-     ProductCategoryMiddleware.checkNoProductsInCategory,
-     ProductCategoryController.destroy)
+  app.route('/productCategories/:productCategoryId')
+    .get(
+      checkEntityExists(ProductCategory, 'productCategoryId'),
+      ProductCategoryController.show)
 
+  app.route('/productCategories/:restaurantId/categories/:productCategoryId')
+    .delete(
+      isLoggedIn,
+      hasRole('owner'),
+      checkEntityExists(ProductCategory, 'productCategoryId'),
+      checkEntityExists(Restaurant, 'restaurantId'),
+      RestaurantMiddleware.checkRestaurantOwnership,
+      ProductCategoryMiddleware.checkProductCategoryOwnership,
+      ProductCategoryMiddleware.checkNoProductsInCategory,
+      ProductCategoryController.destroy
+    )
 
+  // TODO exam: END
 }
 export default loadFileRoutes

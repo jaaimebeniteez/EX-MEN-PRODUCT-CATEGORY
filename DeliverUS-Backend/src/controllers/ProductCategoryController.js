@@ -1,42 +1,84 @@
 import { ProductCategory } from "../models/models.js"
-
-const ProductCategoryController = {
-  async index (req, res) {
-    // TODO
-    try {
-      const categories = await ProductCategory.findAll(
-        { where: { restaurantId: req.params.restaurantId } })
-      res.json(categories)
-    } catch (err) {
-      res.status(500).send(err)
-    }
-  },
-
-  async create (req, res) {
-    try {
-      const newProductCategory = ProductCategory.build(req.body)
-      newProductCategory.restaurantId = req.params.restaurantId
-      const productCategory = await newProductCategory.save()
-      res.json(productCategory)
-    } catch (err) {
-      res.status(500).send(err)
-    }
-  },
-
-  async destroy (req, res) {
-    try {
-      const result = await ProductCategory.destroy({ where: { id: req.params.categoryId } })
-      let message = ''
-      if (result === 1) {
-        message = 'Sucessfuly deleted product category id.'
-      } else {
-        message = 'Could not delete product category.'
-      }
-      res.json(message)
-    } catch (err) {
-      res.status(500).send(err)
-    }
-  },
+const index = async function (req, res) {
+  try {
+    const productCategories = await ProductCategory.findAll()
+    res.json(productCategories)
+  } catch (err) {
+    res.status(500).send(err)
+  }
+}
+// TODO exam: implements create, show, destroy, indexByRestaurant, indexProductsByCategory
+const create = async function (req, res) {
+  let newProductCategory = ProductCategory.build(req.body)
+  try {
+    newProductCategory = await newProductCategory.save()
+    res.json(newProductCategory)
+  } catch (err) {
+    res.status(500).send(err)
+  }
 }
 
+const show = async function (req, res) {
+  try {
+    const productCategory = await ProductCategory.findByPk(req.params.productCategoryId)
+    res.json(productCategory)
+  } catch (err) {
+    res.status(500).send(err)
+  }
+}
+
+const destroy = async function (req, res) {
+  try {
+    const productCategory = await ProductCategory.findByPk(req.params.productCategoryId)
+    if (!productCategory) {
+      return res.status(404).send('Product category not found')
+    }
+
+    await productCategory.destroy()
+    res.status(204).send()
+  } catch (err) {
+    res.status(500).send(err)
+  }
+}
+
+const indexByRestaurant = async function (req, res) {
+  try {
+    const productCategories = await ProductCategory.findAll({
+      where: { restaurantId: req.params.restaurantId }
+    })
+    res.json(productCategories)
+  } catch (err) {
+    res.status(500).send(err)
+  }
+}
+
+const indexProductsByCategory = async function (req, res) {
+  try {
+    const productCategory = await ProductCategory.findByPk(req.params.productCategoryId, {
+      include: [
+        {
+          model: Product,
+          as: 'products'
+        }
+      ]
+    })
+    if (!productCategory) {
+      return res.status(404).send('Product category not found')
+    }
+    res.json(productCategory.products)
+  } catch (err) {
+    res.status(500).send(err)
+  }
+}
+
+const ProductCategoryController = {
+  index,
+  indexByRestaurant,
+  create,
+  show,
+  destroy,
+  indexProductsByCategory
+}
+
+// TODO exam: END
 export default ProductCategoryController
