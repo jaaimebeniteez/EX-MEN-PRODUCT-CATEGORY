@@ -12,3 +12,14 @@ const checkRestaurantExists = async (value, { req }) => {
   }
 }
 
+const create = [
+  check('name').exists().isString().isLength({ min: 1, max: 255 }).trim(),
+  check('restaurantId').exists().isInt({ min: 1 }).toInt().custom(checkRestaurantExists)
+]
+
+const update = [
+  check('name').exists().isString().isLength({ min: 1, max: 255 }).trim(),
+  check('restaurantId').exists().isInt({ min: 1 }).toInt().custom(checkRestaurantExists)
+]
+
+export { create, update }

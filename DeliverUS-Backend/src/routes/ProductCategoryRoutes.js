@@ -14,6 +14,31 @@ const loadFileRoutes = (app) => {
   // - Show a product category
   // - Delete a product category (only for owners, only if no products are associated with it)
   // - List products by product category
+  app.route('/productCategories/restaurants/:restaurantId')
+  .get(
+    isLoggedIn,
+    hasRole('owner'),
+    RestaurantMiddleware.checkRestaurantOwnership,
+    checkEntityExists(Restaurant, 'restaurantId'),
+    ProductCategoryController.index)
+  .post(
+    isLoggedIn,
+    hasRole('owner'),
+    checkEntityExists(Restaurant, 'restaurantId'),
+    RestaurantMiddleware.checkRestaurantOwnership,
+    ProductCategoryValidation.create,
+    handleValidation,
+    ProductCategoryController.create)
+
+   app.route('/productCategories/:restaurantId/categories/:categoryId')
+   .delete(
+     isLoggedIn,
+     hasRole('owner'),
+     checkEntityExists(Restaurant, 'restaurantId'),
+     checkEntityExists(ProductCategory, 'categoryId'),
+     RestaurantMiddleware.checkRestaurantOwnership,
+     ProductCategoryMiddleware.checkNoProductsInCategory,
+     ProductCategoryController.destroy)
 
 
 }
