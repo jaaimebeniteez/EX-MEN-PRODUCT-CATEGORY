@@ -1,0 +1,20 @@
+import ProductCategoryController from '../controllers/ProductCategoryController.js'
+import * as ProductCategoryMiddleware from '../middlewares/ProductCategoryMiddleware.js'
+import * as RestaurantMiddleware from '../middlewares/RestaurantMiddleware.js'
+import * as ProductCategoryValidation from '../controllers/validation/ProductCategoryValidation.js'
+import { ProductCategory, Restaurant } from '../models/models.js'
+import { hasRole, isLoggedIn } from '../middlewares/AuthMiddleware.js'
+import { checkEntityExists } from '../middlewares/EntityMiddleware.js'
+import { handleValidation } from '../middlewares/ValidationHandlingMiddleware.js'
+
+const loadFileRoutes = (app) => {
+  // Define routes for product categories:
+  // - Create a product category (only for owners)
+  // - List product categories by restaurant
+  // - Show a product category
+  // - Delete a product category (only for owners, only if no products are associated with it)
+  // - List products by product category
+
+
+}
+export default loadFileRoutes
